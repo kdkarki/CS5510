@@ -28,11 +28,7 @@ public class Film {
     * @param args the command line arguments
     */
    public static void main(String[] args) {
-       if(args != null && args.length > 0){
-    	   for(String arg : args){
-    		   System.out.println(arg);
-    	   }
-       }
+       
        
        try {
     	   String inputCmd = new String(Files.readAllBytes(Paths.get("in.txt")));
