@@ -12,13 +12,15 @@ import java.util.Scanner;
  */
 public class CSV {
 	
-	public static List<String> LoadFile(String filePath) throws FileNotFoundException{
-		List<String> inputList = new ArrayList<>();
+	public static List<String[]> LoadFile(String filePath) throws FileNotFoundException{
+		List<String[]> inputList = new ArrayList<>();
 		Scanner scn = new Scanner(new FileReader(filePath));
 		//scn.useDelimiter(",");		
 		while(scn.hasNextLine()){
-			String inputMovie = scn.nextLine();
-			inputList.add(inputMovie.replace(",", " "));
+			String inputLine = scn.nextLine();
+                        if(inputLine.length() > 0){                            
+                            inputList.add(inputLine.split(","));
+                        }
 		}
 		scn.close();		
 		

@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import hw1.util.CSV;
 import hw1.util.ErrorTypes;
 import hw1.util.Errors;
+import java.util.function.Consumer;
 
 /**
  *
@@ -121,16 +122,29 @@ public class Film {
 		   case "LOAD":
 			   if(cmdTokens.size() != 2)
 				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "LOAD"));
-			   List<String> movieList = CSV.LoadFile(cmdTokens.get(1));
+			   List<String[]> movieList = CSV.LoadFile(cmdTokens.get(1));
+                           int ldMovieAdded = 0;
 			   if(movieList != null && movieList.size() > 0){
-				   for(String movie : movieList){
-					   try {
-							System.out.println(executeCommand("ADD " + movie));
-						} catch (Exception e) {
-							System.out.println(e.getMessage());
-						}
-				   }
+                               for(String[] movie : movieList){
+                                   if(movie.length < 4)
+                                       System.out.println(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "LOAD"));
+                                   try{
+                                       Movie ldMovie = new Movie(movie[0], movie[1], movie[2], movie[3]);
+                                       if(Database.INSTANCE.addMovie(ldMovie)){
+                                           ldMovieAdded++;
+                                       }
+                                       
+                                   }catch (DateTimeParseException dEx){
+                                       System.out.println(Errors.INSTANCE.getErrorMessage(ErrorTypes.INVALID_DATE, "LOAD"));
+                                   }
+                                   catch (Exception ex){
+                                       System.out.println(ex.getMessage().replace("ADD", "LOAD"));
+                                   }
+                               }
 			   }
+                           
+                           successMessage = "LOAD: OK " + ldMovieAdded;
+                           
 			   break;
 		   case "SEARCH":
 			   if(cmdTokens.size() != 2)
@@ -138,12 +152,10 @@ public class Film {
 			   List<Movie> searchResult = Database.INSTANCE.searchTitleDirector(cmdTokens.get(1));
 			   if(searchResult != null && searchResult.size() > 0){
 				   StringBuilder sbSearchResult = new StringBuilder();
-				   sbSearchResult.append("SEARCH: OK " + searchResult.size());				   
+				   sbSearchResult.append("SEARCH: OK ").append(searchResult.size());				   
 				   for(Movie f : searchResult){
-					   sbSearchResult.append(System.lineSeparator())
-					   				 .append(f.getTitle() + "," + f.getDirector() + "," 
-					   					   + f.getReleaseDate().format(DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH)) 
-					   					   + "," + f.getIsWatched());			    		
+					   sbSearchResult.append(System.lineSeparator()).append(f.getTitle()).append(",").append(f.getDirector()).append(",").append(f.getReleaseDate().format(DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH))).append(",")
+					   				 .append(f.getIsWatched());			    		
 				   }
 				   successMessage = sbSearchResult.toString();
 			   }
