@@ -1,18 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hw1;
 
 import hw1.util.ErrorTypes;
-import hw1.util.Errors;
 import java.security.InvalidParameterException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -39,7 +32,7 @@ public final class Movie {
 	public void setReleaseDate(LocalDate rDate){
 		releaseDate =rDate;
 	}
-	public void setReleaseDate(String rDateString) throws ParseException{
+	public void setReleaseDate(String rDateString) throws DateTimeParseException{
 		DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH);
 		releaseDate = LocalDate.parse(rDateString, dtFormatter);
 	}
@@ -49,11 +42,11 @@ public final class Movie {
 	}
 	public void setTitle(String filmName){
 		if(filmName == null || "".equals(filmName)) 
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.EmptyArgument, "Film name", ""));
+			throw new InvalidParameterException(ErrorTypes.EMPTY_ARGUMENT.toString());
 		if(filmName.contains(","))
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.InvalidParameter, ",", "Film name"));
+			throw new InvalidParameterException(ErrorTypes.INVALID_PARAMETER.toString());
 		if(filmName.contains("\""))
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.InvalidParameter, "\"", "Film name"));
+			throw new InvalidParameterException(ErrorTypes.INVALID_PARAMETER.toString());
 		title = filmName;
 	}
 	
@@ -62,11 +55,11 @@ public final class Movie {
 	}
 	public void setDirector(String directorName) throws InvalidParameterException{
 		if(directorName == null || "".equals(directorName)) 
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.EmptyArgument, "Director name", ""));
+			throw new InvalidParameterException(ErrorTypes.EMPTY_ARGUMENT.toString());
 		if(directorName.contains(","))
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.InvalidParameter, ",", "Director name"));
+			throw new InvalidParameterException(ErrorTypes.INVALID_PARAMETER.toString());
 		if(directorName.contains("\""))
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.InvalidParameter, "\"", "Director name"));
+			throw new InvalidParameterException(ErrorTypes.INVALID_PARAMETER.toString());
 		director = directorName;
 	}
 	
@@ -79,7 +72,7 @@ public final class Movie {
 	public void setIsWatched(String watched) throws InvalidParameterException{
 		if(watched == null || "".equals(watched) 
                         || (!watched.equals("true") && !watched.equals("false"))){
-			throw new InvalidParameterException(Errors.INSTANCE.getErrorMessage(ErrorTypes.NotBool, watched, ""));
+			throw new InvalidParameterException(ErrorTypes.NOT_BOOL.toString());
 		}
 		isWatched = Boolean.parseBoolean(watched);
 	}

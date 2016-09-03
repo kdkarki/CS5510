@@ -1,0 +1,14 @@
+LOAD Load.csv
+SHOW
+CLEAR 
+ADD "John Doe" "Peter Jackson" 1/5/2001 false
+ADD Mike Blank 1/6/2002 true
+ADD Dan "Russ White" 1/17/2003 false
+SHOW
+UPDATE Dan "Russ White" true
+SHOW
+UPDATE Dan "Russ White" Mike Blank
+STORE db.csv
+SEARCH Mike
+TEST Abc Abc
+LOAD Load.csv

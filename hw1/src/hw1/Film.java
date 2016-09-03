@@ -1,47 +1,217 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hw1;
 
-import java.text.ParseException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import hw1.util.CSV;
+import hw1.util.ErrorTypes;
+import hw1.util.Errors;
 
 /**
  *
  * @author kdkarki
  */
+
 public class Film {
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        try {
-                Movie f = new Movie("11/30/2014", "Movie Title1", "Movie Director", "true");
-                Movie f2 = new Movie("12/01/2013", "Movie Title", "Movie Director", "true");
-                System.out.println(f.getDirector());
-                System.out.println(f.getTitle());
-                System.out.println(f.getReleaseDate());
-                System.out.println(f.getIsWatched());
-                System.out.println("The movies are equal: " + f.equals(f2));
 
-                Database.INSTANCE.addFilm(f2);
-                System.out.println(Database.INSTANCE.getItemCount());
-                Database.INSTANCE.addFilm(f);
-                System.out.println(Database.INSTANCE.getItemCount());
-                //Database.INSTANCE.clearDatabase();
-                //System.out.println(Database.INSTANCE.getItemCount());
-                
-                List<Movie> unwatchedFilms = Database.INSTANCE.getUnwatchedFilms();
+	/**
+    * @param args the command line arguments
+    */
+   public static void main(String[] args) {
+       if(args != null && args.length > 0){
+    	   for(String arg : args){
+    		   System.out.println(arg);
+    	   }
+       }
+       
+       try {
+    	   String inputCmd = new String(Files.readAllBytes(Paths.get("in.txt")));
+    	   String[] cmdList = inputCmd.split(System.lineSeparator());
+    	   if(cmdList.length > 0){
+    		   for(String cmd : cmdList){
+    			   try {
+					System.out.println(executeCommand(cmd));
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+    		   }
+    	   }
+		   
+	} catch (FileNotFoundException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+       /*
+	   try {
+           Movie f = new Movie("11/35/2014", "Movie Title1", "Movie Director", "false");
+           Movie f2 = new Movie("12/01/2013", "Movie Title", "Movie Director", "true");
+           System.out.println(f.getDirector());
+           System.out.println(f.getTitle());
+           System.out.println(f.getReleaseDate());
+           System.out.println(f.getIsWatched());
+           System.out.println("The movies are equal: " + f.equals(f2));
 
-        } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-        } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-        }
-    }
-    
+           Database.INSTANCE.addFilm(f2);
+           System.out.println(Database.INSTANCE.getItemCount());
+           Database.INSTANCE.addFilm(f);
+           System.out.println(Database.INSTANCE.getItemCount());
+           //Database.INSTANCE.clearDatabase();
+           //System.out.println(Database.INSTANCE.getItemCount());
+           
+           List<Movie> unwatchedFilms = Database.INSTANCE.getUnwatchedFilms();
+           System.out.println(unwatchedFilms.size());
+           
+           System.out.println(Database.INSTANCE.searchTitleDirector("Title"));
+           
+           Database.INSTANCE.updateFilmTitleAndDirector("Movie Title", "Movie Director", "Movie Title2", "Movie Director");
+
+       } catch (ParseException e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       } catch(InvalidParameterException e){
+    	   System.out.println(e.getMessage());
+       } catch (Exception e) {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       }
+       */
+   }
+   
+   public static String executeCommand(String inputString) throws Exception{
+	   String successMessage = "";
+	   List<String> cmdTokens = new ArrayList<>();
+	   Matcher matcher = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(inputString);
+	   while(matcher.find()){
+		   cmdTokens.add(matcher.group(1).replace("\"", ""));
+	   }
+	   
+	   if(cmdTokens.size() > 0){
+		   
+		   switch(cmdTokens.get(0)){
+		   
+		   case "ADD":
+			   if(cmdTokens.size() != 5)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "ADD"));
+			   
+			   try{
+				   Movie m = new Movie(cmdTokens.get(3), cmdTokens.get(1), cmdTokens.get(2), cmdTokens.get(4));
+				   if(Database.INSTANCE.addMovie(m)){
+					   successMessage = "ADD: OK " + m.getTitle() + " " + m.getDirector();
+				   }
+			   } catch(DateTimeParseException dtEx){
+				   successMessage = Errors.INSTANCE.getErrorMessage(ErrorTypes.INVALID_DATE, "ADD");
+			   }
+			   break;
+		   case "CLEAR":
+			   if(cmdTokens.size() != 1)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "CLEAR"));
+			   if(Database.INSTANCE.clearDatabase()){
+				   successMessage = "CLEAR: OK";
+			   }
+			   break;
+		   case "LOAD":
+			   if(cmdTokens.size() != 2)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "LOAD"));
+			   List<String> movieList = CSV.LoadFile(cmdTokens.get(1));
+			   if(movieList != null && movieList.size() > 0){
+				   for(String movie : movieList){
+					   try {
+							System.out.println(executeCommand("ADD " + movie));
+						} catch (Exception e) {
+							System.out.println(e.getMessage());
+						}
+				   }
+			   }
+			   break;
+		   case "SEARCH":
+			   if(cmdTokens.size() != 2)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "SEARCH"));
+			   List<Movie> searchResult = Database.INSTANCE.searchTitleDirector(cmdTokens.get(1));
+			   if(searchResult != null && searchResult.size() > 0){
+				   StringBuilder sbSearchResult = new StringBuilder();
+				   sbSearchResult.append("SEARCH: OK " + searchResult.size());				   
+				   for(Movie f : searchResult){
+					   sbSearchResult.append(System.lineSeparator())
+					   				 .append(f.getTitle() + "," + f.getDirector() + "," 
+					   					   + f.getReleaseDate().format(DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH)) 
+					   					   + "," + f.getIsWatched());			    		
+				   }
+				   successMessage = sbSearchResult.toString();
+			   }
+			   else
+				   successMessage = "SEARCH: FAIL " + cmdTokens.get(1);
+			   break;
+		   case "STORE":
+			   if(cmdTokens.size() != 2)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "SEARCH"));
+			   break;
+		   case "SHOW":
+			   if(cmdTokens.size() != 1)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "SHOW"));
+			   List<Movie> uMovies = Database.INSTANCE.getUnwatchedMovies();
+			   if(uMovies != null && uMovies.size() > 0){
+				   StringBuilder sbMovies = new StringBuilder();
+				   sbMovies.append("SHOW: OK " + uMovies.size());
+				   for(Movie movie : uMovies){
+					   sbMovies.append(System.lineSeparator()).append(movie.getTitle() + "," 
+							   											+ movie.getDirector() + ","
+							   											+ movie.getReleaseDate().format(DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH)));
+				   }
+				   successMessage = sbMovies.toString();
+			   }
+			   else{
+				   successMessage = "SHOW: OK 0";
+			   }
+			   break;
+		   case "UPDATE":
+			   if(cmdTokens.size() != 4 && cmdTokens.size() != 5)
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "UPDATE"));
+			   //if there are 4 arguments then it should be for title and director
+			   if(cmdTokens.size() == 5){
+				   //the argument order is: OldTime OldDirector NewTitle NewDirector
+				   if(Database.INSTANCE.updateMovieTitleAndDirector(cmdTokens.get(1), cmdTokens.get(2), cmdTokens.get(3), cmdTokens.get(4))){
+					   successMessage = "UPDATE: OK" + cmdTokens.get(3) + " " + cmdTokens.get(4);
+				   }
+			   }
+			   else if (cmdTokens.size() == 4){
+				   //This could be either update watchedstate or release date
+				   if("true".equals(cmdTokens.get(3)) || "false".equals(cmdTokens.get(3))){
+					   if(Database.INSTANCE.updateMovieWatchedStatus(cmdTokens.get(1), cmdTokens.get(2), Boolean.parseBoolean(cmdTokens.get(3)))){
+						   successMessage = "UPDATE: OK " + cmdTokens.get(1) + " " + cmdTokens.get(2);
+					   }
+				   } else {
+					   DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("M/d/yyyy", Locale.ENGLISH);
+					   try{
+						   LocalDate releaseDate = LocalDate.parse(cmdTokens.get(3), dtFormatter);
+						   if(Database.INSTANCE.updateMovieReleaseDate(cmdTokens.get(1), cmdTokens.get(2), releaseDate)){
+							   successMessage = "UPDATE: OK " + cmdTokens.get(1) + " " + cmdTokens.get(2);
+						   }
+					   } catch(Exception ex){
+						   successMessage = Errors.INSTANCE.getErrorMessage(ErrorTypes.INVALID_DATE_OR_BOOL, "UPDATE");
+					   }
+				   }
+			   }
+			   break;
+			   default:
+				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.UNKNOWN_COMMAND, cmdTokens.get(0)));
+		   }
+	   }
+	   
+	   return successMessage;
+		   
+   }
+
 }
