@@ -19,13 +19,13 @@ public enum Database {
 	
     INSTANCE;
 
-    private final List<Film> filmList = new ArrayList<>();
+    private final List<Movie> filmList = new ArrayList<>();
 
     public int getItemCount(){
             return filmList.size();
     }
 
-    public boolean addFilm(Film f) throws Exception{
+    public boolean addFilm(Movie f) throws Exception{
 
             if(!filmList.contains(f)){
                     filmList.add(f);
@@ -42,8 +42,8 @@ public enum Database {
             return true;
     }
 
-    public List<Film> getUnwatchedFilms(){
-            List<Film> cloneList = (ArrayList)((ArrayList)filmList).clone();
+    public List<Movie> getUnwatchedFilms(){
+            List<Movie> cloneList = (ArrayList)((ArrayList)filmList).clone();
             cloneList.removeIf(f -> f.getIsWatched());
             
             return cloneList;
