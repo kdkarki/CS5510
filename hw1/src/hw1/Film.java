@@ -165,6 +165,7 @@ public class Film {
 		   case "STORE":
 			   if(cmdTokens.size() != 2)
 				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "SEARCH"));
+                           successMessage = CSV.storeInCSVFile(Database.INSTANCE.getAllMovies(), cmdTokens.get(1));
 			   break;
 		   case "SHOW":
 			   if(cmdTokens.size() != 1)
