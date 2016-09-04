@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * @author kdkarki
  */
 
-public class Film {
+public class Films {
 
 	/**
     * @param args the command line arguments
@@ -122,7 +122,7 @@ public class Film {
 		   case "LOAD":
 			   if(cmdTokens.size() != 2)
 				   throw new Exception(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "LOAD"));
-			   List<String[]> movieList = CSV.LoadFile(cmdTokens.get(1));
+			   List<String[]> movieList = CSV.loadFile(cmdTokens.get(1));
                            int ldMovieAdded = 0;
 			   if(movieList != null && movieList.size() > 0){
                                for(String[] movie : movieList){

@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class CSV {
 	
-	public static List<String[]> LoadFile(String filePath) throws FileNotFoundException{
+	public static List<String[]> loadFile(String filePath) throws FileNotFoundException{
 		List<String[]> inputList = new ArrayList<>();
 		Scanner scn = new Scanner(new FileReader(filePath));
 		//scn.useDelimiter(",");		
