@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import hw1.util.CSV;
 import hw1.util.ErrorTypes;
 import hw1.util.Errors;
-import java.util.function.Consumer;
 
 /**
  *
@@ -51,40 +50,6 @@ public class Films {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-       /*
-	   try {
-           Movie f = new Movie("11/35/2014", "Movie Title1", "Movie Director", "false");
-           Movie f2 = new Movie("12/01/2013", "Movie Title", "Movie Director", "true");
-           System.out.println(f.getDirector());
-           System.out.println(f.getTitle());
-           System.out.println(f.getReleaseDate());
-           System.out.println(f.getIsWatched());
-           System.out.println("The movies are equal: " + f.equals(f2));
-
-           Database.INSTANCE.addFilm(f2);
-           System.out.println(Database.INSTANCE.getItemCount());
-           Database.INSTANCE.addFilm(f);
-           System.out.println(Database.INSTANCE.getItemCount());
-           //Database.INSTANCE.clearDatabase();
-           //System.out.println(Database.INSTANCE.getItemCount());
-           
-           List<Movie> unwatchedFilms = Database.INSTANCE.getUnwatchedFilms();
-           System.out.println(unwatchedFilms.size());
-           
-           System.out.println(Database.INSTANCE.searchTitleDirector("Title"));
-           
-           Database.INSTANCE.updateFilmTitleAndDirector("Movie Title", "Movie Director", "Movie Title2", "Movie Director");
-
-       } catch (ParseException e) {
-           // TODO Auto-generated catch block
-           e.printStackTrace();
-       } catch(InvalidParameterException e){
-    	   System.out.println(e.getMessage());
-       } catch (Exception e) {
-           // TODO Auto-generated catch block
-           e.printStackTrace();
-       }
-       */
    }
    
    public static String executeCommand(String inputString) throws Exception{
@@ -125,6 +90,7 @@ public class Films {
 			   List<String[]> movieList = CSV.loadFile(cmdTokens.get(1));
                            int ldMovieAdded = 0;
 			   if(movieList != null && movieList.size() > 0){
+                               Database.INSTANCE.clearDatabase();
                                for(String[] movie : movieList){
                                    if(movie.length < 4)
                                        System.out.println(Errors.INSTANCE.getErrorMessage(ErrorTypes.WRONG_ARGUMENT_COUNT, "LOAD"));
