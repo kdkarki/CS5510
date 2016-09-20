@@ -1,22 +1,36 @@
 package edu.vt.ece.locks;
 
+import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PetersonLockNode implements Comparable<PetersonLockNode> {
 
 	private Integer nodeId;
-	private boolean[] flags;
+	private Hashtable<Integer,Boolean> flags;
 	private AtomicInteger victim = new AtomicInteger();
 	
-	PetersonLockNode parent, rightChild, LeftChild;
+	private PetersonLockNode parent, rightChild, LeftChild;
 	
-	public PetersonLockNode(Integer id, PetersonLockNode parentNode, Integer totalThreads){
+	public PetersonLockNode(Integer id, PetersonLockNode parentNode){
 		nodeId = id;
 		parent = parentNode;
+		flags = new Hashtable<>();
 	}
 	
 	public Integer getNodeId(){
 		return nodeId;
+	}
+	
+	public PetersonLockNode getParentNode(){
+		return parent;
+	}
+	
+	public PetersonLockNode getRightChild(){
+		return rightChild;
+	}
+	
+	public PetersonLockNode getLeftChild(){
+		return LeftChild;
 	}
 	
 	@Override
@@ -25,7 +39,16 @@ public class PetersonLockNode implements Comparable<PetersonLockNode> {
 	}
 	
 	public void lock(Integer currentThreadId){
+		flags.put(currentThreadId, true);
+		victim.set(currentThreadId);
 		
+		while(otherThreadsWaiting(currentThreadId) && victim.get() == currentThreadId);
+	}
+
+	private boolean otherThreadsWaiting(Integer currentThreadId) {
+		// TODO Auto-generated method stub
+		
+		return false;
 	}
 
 }
