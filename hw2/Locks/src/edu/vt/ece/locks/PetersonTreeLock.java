@@ -84,11 +84,21 @@ public class PetersonTreeLock implements Lock {
 	@Override
 	public void unlock(int threadId) {
 		// TODO Auto-generated method stub
-		PetersonLockNode threadNode = getThreadLeafNode(threadId);
+		/*PetersonLockNode threadNode = getThreadLeafNode(threadId);
 		PetersonLockNode currentNode = rootNode;
 		while(currentNode != threadNode){
 			currentNode.unlock(threadId);
 		}
 		threadNode.unlock(threadId);
+		*/
+		PetersonLockNode currentNode = rootNode;
+		
+		while(currentNode != null){
+			currentNode.unlock(threadId);
+			if(currentNode.getNodeId() > threadId)
+				currentNode = currentNode.getLeftChild();
+			else
+				currentNode = currentNode.getRightChild();
+		}
 	}
 }
