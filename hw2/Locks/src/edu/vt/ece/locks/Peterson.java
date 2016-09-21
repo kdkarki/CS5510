@@ -31,4 +31,16 @@ public class Peterson implements Lock{
 		flag[i].set(false);
 	}
 
+	@Override
+	public void lock(int threadId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unlock(int threadId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -3,7 +3,7 @@ package edu.vt.ece.locks;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PetersonTreeLock {
+public class PetersonTreeLock implements Lock {
 
 	private PetersonLockNode rootNode;
 	private List<PetersonLockNode> leafNodes = new ArrayList<>();
@@ -55,5 +55,38 @@ public class PetersonTreeLock {
 			return leafNodes.get(threadId - 1);
 		else 
 			return leafNodes.get(threadId);
+	}
+
+	@Override
+	public void lock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unlock() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void lock(int threadId) {
+		// TODO Auto-generated method stub
+		PetersonLockNode threadNode = getThreadLeafNode(threadId);
+		while(threadNode != null){
+			threadNode.lock(threadId);
+			threadNode = threadNode.getParentNode();
+		}
+	}
+
+	@Override
+	public void unlock(int threadId) {
+		// TODO Auto-generated method stub
+		PetersonLockNode threadNode = getThreadLeafNode(threadId);
+		PetersonLockNode currentNode = rootNode;
+		while(currentNode != threadNode){
+			currentNode.unlock(threadId);
+		}
+		threadNode.unlock(threadId);
 	}
 }
