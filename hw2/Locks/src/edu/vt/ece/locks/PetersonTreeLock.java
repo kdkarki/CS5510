@@ -17,8 +17,10 @@ public class PetersonTreeLock implements Lock {
 		int rootNodeId = (numberOfThreads/2) - 1;
 		rootNode = new PetersonLockNode(rootNodeId, null);
 		rootNode.setFlags(0, numberOfThreads - 1);
-		createLeftTree(0, rootNodeId - 1, rootNode);
-		createRightTree(rootNodeId + 1, numberOfThreads - 2, rootNode);
+		if(rootNodeId > 0){
+			createLeftTree(0, rootNodeId - 1, rootNode);
+			createRightTree(rootNodeId + 1, numberOfThreads - 2, rootNode);
+		}
 	}
 
 	private void createLeftTree(int lowerBound, int upperBound, PetersonLockNode parentNode) {

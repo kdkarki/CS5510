@@ -10,7 +10,7 @@ import edu.vt.ece.locks.*;
  */
 public class Test2 {
 
-	private static final int THREAD_COUNT = 64;
+	private static final int THREAD_COUNT = 2;
 	private static final int TOTAL_ITERS = 64000;
 	private static final int ITERS = TOTAL_ITERS/THREAD_COUNT;
 	
