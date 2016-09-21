@@ -2,6 +2,7 @@ package edu.vt.ece.locks;
 
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 public class PetersonLockNode implements Comparable<PetersonLockNode> {
 
@@ -9,7 +10,7 @@ public class PetersonLockNode implements Comparable<PetersonLockNode> {
 	private Hashtable<Integer,Boolean> flags;
 	private AtomicInteger victim = new AtomicInteger();
 	
-	private PetersonLockNode parent, rightChild, LeftChild;
+	private PetersonLockNode parent, rightChild, leftChild;
 	
 	public PetersonLockNode(Integer id, PetersonLockNode parentNode){
 		nodeId = id;
@@ -29,8 +30,24 @@ public class PetersonLockNode implements Comparable<PetersonLockNode> {
 		return rightChild;
 	}
 	
+	public void setRightChild(PetersonLockNode rightNode){
+		rightChild = rightNode;
+	}
+	
 	public PetersonLockNode getLeftChild(){
-		return LeftChild;
+		return leftChild;
+	}
+	
+	public void setLeftChild(PetersonLockNode leftNode){
+		leftChild = leftNode;
+	}
+	
+	public void setFlags(Integer lowerBound, Integer upperBound){
+		if(lowerBound < upperBound){
+			for(Integer i = lowerBound; i < upperBound; i++){
+				flags.put(i, false);
+			}
+		}
 	}
 	
 	@Override
@@ -47,8 +64,15 @@ public class PetersonLockNode implements Comparable<PetersonLockNode> {
 
 	private boolean otherThreadsWaiting(Integer currentThreadId) {
 		// TODO Auto-generated method stub
-		
-		return false;
+		for(Map.Entry<Integer, Boolean> item : flags.entrySet()){
+			if(item.getValue() && item.getKey() != nodeId)
+				return true;
+		}
+		return true;
+	}
+	
+	public void unlock(Integer currentThreadId){
+		flags.put(currentThreadId, false);
 	}
 
 }

@@ -23,7 +23,7 @@ public class Filter implements Lock{
 	@Override
 	public void lock() {
 		int me = ((ThreadId)Thread.currentThread()).getThreadId();
-		System.out.println("Thread " + me + " entered lock");
+		//System.out.println("Thread " + me + " entered lock");
 		for(int i=1; i<level.length; i++){
 			level[me].set(i);
 			victim[i].set(me);

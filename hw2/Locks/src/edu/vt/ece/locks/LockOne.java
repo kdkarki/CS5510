@@ -15,11 +15,11 @@ public class LockOne implements Lock{
 	@Override
 	public void lock() {
 		int i = ((ThreadId)Thread.currentThread()).getThreadId();
-		System.out.println("Thread " + i + " entered lock");
+		//System.out.println("Thread " + i + " entered lock");
 		int j = 1 - i;
 		flag[i].set(true);
 		while(flag[j].get()){
-			System.out.println("Thread " + i + " waiting");
+			//System.out.println("Thread " + i + " waiting");
 		}
 	}
 

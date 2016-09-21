@@ -14,10 +14,10 @@ public class LockTwo implements Lock{
 	@Override
 	public void lock() {
 		int i = ((ThreadId)Thread.currentThread()).getThreadId();
-		System.out.println("Thread " + i + " entered lock");
+		//System.out.println("Thread " + i + " entered lock");
 		victim.set(i);
 		while(victim.get() == i);
-			System.out.println("Thread " + i + " waiting");
+			//System.out.println("Thread " + i + " waiting");
 	}
 
 	@Override

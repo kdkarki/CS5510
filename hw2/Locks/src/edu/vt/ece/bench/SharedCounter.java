@@ -22,6 +22,10 @@ public class SharedCounter extends Counter{
 			temp = super.getAndIncrement();
 		} finally {
 			lock.unlock();
+			if(temp == 1 || temp % 100 == 0 || temp == 1999){
+				long tId = ((ThreadId)Thread.currentThread()).getThreadId();
+				System.out.println("Thread " + tId + " updated counter " + temp);
+			}
 		}
 		return temp;
 	}
