@@ -15,36 +15,39 @@ public class PetersonTreeLock implements Lock {
 	private void createLockTree(int numberOfThreads){
 		//The assumption is that the number of threads will be power of 2
 		int rootNodeId = (numberOfThreads/2) - 1;
-		rootNode = new PetersonLockNode(rootNodeId, null);
-		rootNode.setFlags(0, numberOfThreads - 1);
+		if (rootNodeId < 0) rootNodeId = 0;
+		rootNode = new PetersonLockNode(rootNodeId, null, numberOfThreads);
+		//rootNode.setFlags(0, numberOfThreads - 1);
 		if(rootNodeId > 0){
-			createLeftTree(0, rootNodeId - 1, rootNode);
-			createRightTree(rootNodeId + 1, numberOfThreads - 2, rootNode);
+			createLeftTree(0, rootNodeId - 1, rootNode, numberOfThreads);
+			createRightTree(rootNodeId + 1, numberOfThreads - 2, rootNode, numberOfThreads);
 		}
+		else
+			leafNodes.add(rootNode);
 	}
 
-	private void createLeftTree(int lowerBound, int upperBound, PetersonLockNode parentNode) {
+	private void createLeftTree(int lowerBound, int upperBound, PetersonLockNode parentNode, Integer numberOfThreads) {
 		int currentNodeId = (lowerBound + upperBound) / 2;
-		PetersonLockNode currentNode = new PetersonLockNode(currentNodeId, parentNode);
+		PetersonLockNode currentNode = new PetersonLockNode(currentNodeId, parentNode, numberOfThreads);
 		parentNode.setLeftChild(currentNode);
 		if(lowerBound == upperBound){			
 			leafNodes.add(currentNode);
 			return;
 		}	
-		createLeftTree(lowerBound, currentNodeId - 1, currentNode);
-		createRightTree(currentNodeId + 1, upperBound, currentNode);
+		createLeftTree(lowerBound, currentNodeId - 1, currentNode, numberOfThreads);
+		createRightTree(currentNodeId + 1, upperBound, currentNode, numberOfThreads);
 	}
 
-	private void createRightTree(int lowerBound, int upperBound, PetersonLockNode parentNode) {
+	private void createRightTree(int lowerBound, int upperBound, PetersonLockNode parentNode, Integer numberOfThreads) {
 		int currentNodeId = (lowerBound + upperBound) / 2;
-		PetersonLockNode currentNode = new PetersonLockNode(currentNodeId, parentNode);
+		PetersonLockNode currentNode = new PetersonLockNode(currentNodeId, parentNode, numberOfThreads);
 		parentNode.setRightChild(currentNode);
 		if(lowerBound == upperBound){			
 			leafNodes.add(currentNode);
 			return;
 		}	
-		createLeftTree(lowerBound, currentNodeId - 1, currentNode);
-		createRightTree(currentNodeId + 1, upperBound, currentNode);
+		createLeftTree(lowerBound, currentNodeId - 1, currentNode, numberOfThreads);
+		createRightTree(currentNodeId + 1, upperBound, currentNode, numberOfThreads);
 		
 	}
 
@@ -53,10 +56,7 @@ public class PetersonTreeLock implements Lock {
 	}
 	
 	private PetersonLockNode getThreadLeafNode(int threadId){
-		if(threadId % 2 == 1)
-			return leafNodes.get(threadId - 1);
-		else 
-			return leafNodes.get(threadId);
+		return leafNodes.get(threadId/2);
 	}
 
 	@Override
@@ -92,10 +92,11 @@ public class PetersonTreeLock implements Lock {
 		threadNode.unlock(threadId);
 		*/
 		PetersonLockNode currentNode = rootNode;
+		PetersonLockNode leafNode = getThreadLeafNode(threadId);
 		
 		while(currentNode != null){
 			currentNode.unlock(threadId);
-			if(currentNode.getNodeId() > threadId)
+			if(currentNode.getNodeId() > (leafNode.getNodeId()))
 				currentNode = currentNode.getLeftChild();
 			else
 				currentNode = currentNode.getRightChild();

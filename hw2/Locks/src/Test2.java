@@ -1,7 +1,7 @@
 import edu.vt.ece.bench.Counter;
 import edu.vt.ece.bench.SharedCounter;
-import edu.vt.ece.bench.TestThread;
 import edu.vt.ece.bench.TestThread2;
+import edu.vt.ece.bench.ThreadId;
 import edu.vt.ece.locks.*;
 
 /**

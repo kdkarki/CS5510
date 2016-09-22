@@ -16,16 +16,16 @@ public class SharedCounter extends Counter{
 	
 	@Override
 	public int getAndIncrement() {
-		lock.lock();
+		int tId = ((ThreadId)Thread.currentThread()).getThreadId();
+		lock.lock(tId);
 		int temp = -1;
 		try {
 			temp = super.getAndIncrement();
-		} finally {
-			lock.unlock();
-			if(temp == 1 || temp % 100 == 0 || temp == 1999){
-				long tId = ((ThreadId)Thread.currentThread()).getThreadId();
+			if(temp == 1 || temp % 100 == 0 || temp == 1999 || temp == 63999){
 				System.out.println("Thread " + tId + " updated counter " + temp);
 			}
+		} finally {
+			lock.unlock(tId);
 		}
 		return temp;
 	}
